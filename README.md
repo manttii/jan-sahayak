@@ -5,7 +5,7 @@
 **Jan Sahayak** is a citizen-first UI/UX redesign of Uttarakhand's Apuni Sarkar e-services portal, built for the UKIS Hackathon 2026 (Problem P-013).
 
 ## 🚀 Live Demo
-*(Insert your Vercel Link Here)*
+**[Click here to view the live Jan Sahayak prototype](https://jan-sahayak-n411p6tpy-manttiis-projects.vercel.app/)**
 
 ## 📑 The Challenge (P-013)
 The ITDA challenge requires a complete rethinking of the e-services portal to address mobile usability, digital literacy barriers, and navigation challenges. The goal is not just a visual makeover, but a deeply researched, validated UI/UX overhaul.
