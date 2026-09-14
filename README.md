@@ -1,36 +1,39 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Jan Sahayak — Apuni Sarkar Redesign
 
-## Getting Started
+![Jan Sahayak](https://img.shields.io/badge/Status-Prototype-success) ![Next.js](https://img.shields.io/badge/Framework-Next.js_14-black) ![Tailwind](https://img.shields.io/badge/Styling-Tailwind_CSS_v4-38B2AC)
 
-First, run the development server:
+**Jan Sahayak** is a citizen-first UI/UX redesign of Uttarakhand's Apuni Sarkar e-services portal, built for the UKIS Hackathon 2026 (Problem P-013).
 
+## 🚀 Live Demo
+*(Insert your Vercel Link Here)*
+
+## 📑 The Challenge (P-013)
+The ITDA challenge requires a complete rethinking of the e-services portal to address mobile usability, digital literacy barriers, and navigation challenges. The goal is not just a visual makeover, but a deeply researched, validated UI/UX overhaul.
+
+## 🧠 Our Approach & Methodology
+We did not just build a UI; we conducted **real user research** to identify exactly where citizens struggle on the current portal.
+
+Please read our full **[UX Research & Validation Report](UX_Research_Report.md)** for our methodology, testing results, and before/after metrics.
+
+### Key Redesign Features
+1. **True Mobile-First Design:** No more pinch-to-zoom. Large touch targets, bottom navigation for thumb-reachability, and native-app feel.
+2. **Frictionless Bilingual Experience:** 1-click toggle between conversational Hindi and English that persists across the entire application.
+3. **Transparent Prerequisites:** Users see exactly what documents they need *before* starting an application.
+4. **Action-Oriented Architecture:** We abandoned the "Department-first" structure of the old portal for a "Citizen-intent" structure (Apply, Track, Grievance).
+5. **Accessibility (WCAG):** Fully tested for color contrast and screen-reader compatibility (ARIA labels on all interactive elements).
+
+## 💻 Tech Stack
+- **Framework:** Next.js 14 (App Router)
+- **Styling:** Tailwind CSS v4
+- **State Management:** React Context API (Language State)
+- **Deployment:** Vercel
+
+## 🛠️ How to run locally
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
+Open `http://localhost:3000` in your browser.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+*Built by Manit Sharma for UKIS Hackathon 2026.*
