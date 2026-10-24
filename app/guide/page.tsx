@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useLang } from '../lang-context';
@@ -8,6 +8,8 @@ interface GuideItem {
   iconEn: string;
   titleHi: string;
   titleEn: string;
+  descHi: string;
+  descEn: string;
   certs: { hi: string; en: string; applyId: string }[];
   docsHi: string[];
   docsEn: string[];
@@ -19,206 +21,219 @@ const guideItems: GuideItem[] = [
   {
     id: 'school',
     iconEn: '🎓',
-    titleHi: 'स्कूल / कॉलेज प्रवेश',
-    titleEn: 'School / College Admission',
+    titleHi: 'स्कूल / कॉलेज प्रवेश एवं छात्रवृत्ति',
+    titleEn: 'School / College Admission & Scholarships',
+    descHi: 'उत्तराखण्ड के किसी भी सरकारी या निजी कॉलेज, पॉलिटेक्निक या छात्रवृत्ति योजना हेतु',
+    descEn: 'For admissions to universities, colleges, polytechnics, and state scholarship schemes',
     certs: [
-      { hi: 'आय प्रमाण पत्र', en: 'Income Certificate', applyId: 'income' },
-      { hi: 'जाति प्रमाण पत्र', en: 'Caste Certificate', applyId: 'caste' },
+      { hi: 'आय प्रमाण पत्र (Income)', en: 'Income Certificate', applyId: 'income' },
+      { hi: 'स्थायी निवास प्रमाण पत्र (Domicile)', en: 'Domicile Certificate', applyId: 'domicile' },
+      { hi: 'जाति प्रमाण पत्र (Caste)', en: 'Caste Certificate', applyId: 'caste' },
     ],
-    docsHi: ['आधार कार्ड', 'पासपोर्ट फोटो', 'पिछली कक्षा की मार्कशीट', 'आय प्रमाण'],
-    docsEn: ['Aadhaar Card', 'Passport Photo', 'Previous marksheet', 'Income proof'],
-    timeHi: '7-14 दिन',
-    timeEn: '7-14 days',
+    docsHi: ['आधार कार्ड', 'राशन कार्ड / परिवार रजिस्टर', 'पिछली कक्षा की मार्कशीट', 'पासपोर्ट फोटो'],
+    docsEn: ['Aadhaar Card', 'Ration Card / Pariwar Register', 'Previous marksheet', 'Passport photo'],
+    timeHi: '7-14 कार्य दिवस',
+    timeEn: '7-14 working days',
   },
   {
     id: 'job',
     iconEn: '💼',
-    titleHi: 'नौकरी आवेदन',
-    titleEn: 'Job Application',
+    titleHi: 'सरकारी नौकरी एवं भर्ती (UKSSSC / UKPSC)',
+    titleEn: 'Government Recruitment & Jobs (UKSSSC / UKPSC)',
+    descHi: 'राज्य सरकार की नौकरियों में स्थानीय आरक्षण, शारीरिक छूट एवं सत्यापन हेतु',
+    descEn: 'For state employment, reservation benefits, and physical standard concessions',
     certs: [
-      { hi: 'चरित्र प्रमाण पत्र', en: 'Character Certificate', applyId: 'character' },
-      { hi: 'निवास प्रमाण पत्र', en: 'Domicile Certificate', applyId: 'domicile' },
+      { hi: 'स्थायी / मूल निवास प्रमाण पत्र', en: 'Domicile Certificate', applyId: 'domicile' },
+      { hi: 'चरित्र प्रमाण पत्र (Police)', en: 'Character Certificate', applyId: 'character' },
+      { hi: 'पर्वतीय क्षेत्र प्रमाण पत्र (Hill Concession)', en: 'Hilly Area Certificate', applyId: 'hilly' },
+      { hi: 'जाति / ईडब्ल्यूएस प्रमाण पत्र', en: 'Caste / EWS Certificate', applyId: 'caste' },
     ],
-    docsHi: ['आधार कार्ड', 'पासपोर्ट फोटो', 'शैक्षिक प्रमाण पत्र', 'निवास प्रमाण'],
-    docsEn: ['Aadhaar Card', 'Passport Photo', 'Educational certificates', 'Residence proof'],
-    timeHi: '10-15 दिन',
-    timeEn: '10-15 days',
+    docsHi: ['आधार कार्ड', 'हाईस्कूल मार्कशीट (UK बोर्ड)', 'पटवारी आख्या / खतौनी', 'शपथ पत्र'],
+    docsEn: ['Aadhaar Card', 'High School Marksheet (UK Board)', 'Patwari report / Land records', 'Affidavit'],
+    timeHi: '7-15 कार्य दिवस',
+    timeEn: '7-15 working days',
+  },
+  {
+    id: 'army',
+    iconEn: '⛰️',
+    titleHi: 'सेना एवं पुलिस भर्ती (Hill Concession)',
+    titleEn: 'Army, Police & Paramilitary Recruitment',
+    descHi: 'पर्वतीय नागरिकों के लिए शारीरिक ऊंचाई एवं छाती के माप में छूट के लिए',
+    descEn: 'For height and chest physical standard relaxations for hill residents',
+    certs: [
+      { hi: 'पर्वतीय क्षेत्र प्रमाण पत्र (Hill Certificate)', en: 'Hilly Area Certificate', applyId: 'hilly' },
+      { hi: 'स्थायी निवास प्रमाण पत्र', en: 'Domicile Certificate', applyId: 'domicile' },
+      { hi: 'चरित्र प्रमाण पत्र', en: 'Character Certificate', applyId: 'character' },
+    ],
+    docsHi: ['आधार कार्ड', 'स्थायी निवास प्रमाण पत्र', 'पटवारी पर्वतीय सत्यापन आख्या', 'पासपोर्ट फोटो'],
+    docsEn: ['Aadhaar Card', 'Domicile Certificate', 'Patwari Hilly Verification Report', 'Passport photo'],
+    timeHi: '7 कार्य दिवस',
+    timeEn: '7 working days',
   },
   {
     id: 'scheme',
-    iconEn: '🏛',
-    titleHi: 'सरकारी योजना लाभ',
-    titleEn: 'Govt. Scheme Benefit',
+    iconEn: '🏛️',
+    titleHi: 'सरकारी कल्याणकारी योजनाएं एवं पेंशन',
+    titleEn: 'Govt Social Welfare Schemes & Pensions',
+    descHi: 'वृद्धावस्था, दिव्यांग, विधवा पेंशन, किसान सम्मान निधि एवं उज्ज्वला योजना',
+    descEn: 'For old age pension, disability benefits, widow assistance, and subsidised schemes',
     certs: [
-      { hi: 'आय प्रमाण पत्र', en: 'Income Certificate', applyId: 'income' },
-      { hi: 'जाति प्रमाण पत्र', en: 'Caste Certificate', applyId: 'caste' },
+      { hi: 'आय प्रमाण पत्र (Income)', en: 'Income Certificate', applyId: 'income' },
+      { hi: 'परिवार रजिस्टर की नकल', en: 'Pariwar Register Copy', applyId: 'pariwar' },
+      { hi: 'दिव्यांगता प्रमाण पत्र (यदि लागू)', en: 'Disability Certificate (if applicable)', applyId: 'disability' },
+      { hi: 'राशन कार्ड (Ration)', en: 'Ration Card', applyId: 'ration' },
     ],
-    docsHi: ['आधार कार्ड', 'राशन कार्ड', 'बैंक पासबुक', 'आय प्रमाण'],
-    docsEn: ['Aadhaar Card', 'Ration Card', 'Bank passbook', 'Income proof'],
-    timeHi: '7-14 दिन',
-    timeEn: '7-14 days',
+    docsHi: ['आधार कार्ड', 'बैंक पासबुक (खाता संख्या व IFSC)', 'परिवार रजिस्टर नकल', 'पासपोर्ट फोटो'],
+    docsEn: ['Aadhaar Card', 'Bank passbook copy', 'Pariwar register copy', 'Passport photo'],
+    timeHi: '3-14 कार्य दिवस',
+    timeEn: '3-14 working days',
   },
   {
     id: 'marriage',
     iconEn: '💍',
-    titleHi: 'विवाह पंजीकरण',
-    titleEn: 'Marriage Registration',
+    titleHi: 'विवाह पंजीकरण एवं कानूनी अभिलेख',
+    titleEn: 'Marriage Registration & Legal Proof',
+    descHi: 'पासपोर्ट, संयुक्त बैंक खाता, वीजा एवं महिला अधिकारों के विधिक संरक्षण हेतु',
+    descEn: 'For passport, joint bank accounts, visa sponsorship, and statutory spousal rights',
     certs: [
-      { hi: 'आयु प्रमाण (जन्म प्रमाण पत्र)', en: 'Age Proof (Birth Certificate)', applyId: 'birth' },
-      { hi: 'निवास प्रमाण पत्र', en: 'Residence Proof (Domicile)', applyId: 'domicile' },
+      { hi: 'विवाह पंजीकरण प्रमाण पत्र', en: 'Marriage Certificate', applyId: 'marriage' },
+      { hi: 'दोनों पक्षों का मूल निवास', en: 'Domicile of Spouses', applyId: 'domicile' },
     ],
-    docsHi: ['वर-वधू का आधार कार्ड', 'पासपोर्ट फोटो (युगल)', 'विवाह का फोटो', 'गवाहों का आधार'],
-    docsEn: ['Aadhaar of both spouses', 'Couple passport photo', 'Wedding photo', 'Witness Aadhaar'],
-    timeHi: '15-21 दिन',
-    timeEn: '15-21 days',
+    docsHi: ['वर एवं वधू का आधार कार्ड', 'संयुक्त विवाह फोटो', 'विवाह निमंत्रण कार्ड / निकाहनामा', 'दो गवाहों के पहचान पत्र'],
+    docsEn: ['Aadhaar of Bride & Groom', 'Joint couple photo', 'Wedding invitation card', 'ID proofs of 2 witnesses'],
+    timeHi: '15 कार्य दिवस',
+    timeEn: '15 working days',
   },
-  {
-    id: 'loan',
-    iconEn: '🏦',
-    titleHi: 'बैंक लोन',
-    titleEn: 'Bank Loan',
-    certs: [
-      { hi: 'आय प्रमाण पत्र', en: 'Income Certificate', applyId: 'income' },
-    ],
-    docsHi: ['आधार कार्ड', 'पैन कार्ड', 'बैंक स्टेटमेंट (6 माह)', 'संपत्ति दस्तावेज़'],
-    docsEn: ['Aadhaar Card', 'PAN Card', 'Bank statement (6 months)', 'Property documents'],
-    timeHi: '7-10 दिन',
-    timeEn: '7-10 days',
-  },
-];
-
-const navItems = [
-  { icon: '🏠', labelHi: 'होम',    labelEn: 'Home',      href: '/' },
-  { icon: '📋', labelHi: 'सेवाएं', labelEn: 'Services',  href: '/services' },
-  { icon: '🔍', labelHi: 'स्थिति', labelEn: 'Track',     href: '/track' },
-  { icon: '📢', labelHi: 'शिकायत', labelEn: 'Grievance', href: '/grievance' },
-  { icon: '👤', labelHi: 'खाता',   labelEn: 'Account',   href: '/account' },
 ];
 
 export default function GuidePage() {
-  const { lang, toggle } = useLang();
-  const [openId, setOpenId] = useState<string | null>(null);
-
-  const toggle2 = (id: string) => setOpenId(prev => (prev === id ? null : id));
+  const { lang, t, speak } = useLang();
+  const [openId, setOpenId] = useState<string | null>('school');
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/" aria-label={lang === 'hi' ? 'होम पर जाएं' : 'Go back home'}>
-              <span className="text-slate-500 text-xl leading-none">←</span>
-            </Link>
-            <h1 className="font-bold text-slate-900 text-base">
-              {lang === 'hi' ? 'कौन सा प्रमाण पत्र चाहिए?' : 'Which Certificate Do I Need?'}
-            </h1>
-          </div>
-          <button
-            onClick={toggle}
-            aria-label={lang === 'hi' ? 'Switch to English' : 'हिंदी में बदलें'}
-            className="text-sm border border-green-700 text-green-700 rounded-full px-3 py-1 font-semibold focus:outline-none focus:ring-2 focus:ring-green-500"
-          >
-            {lang === 'hi' ? 'EN' : 'हि'}
-          </button>
+    <main className="w-full max-w-5xl mx-auto px-4 py-8 pb-32">
+      {/* Header */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span className="text-[10px] font-black uppercase tracking-widest text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-md">
+            {t('नागरिक निर्णय सहायक', 'Citizen Decision Assistant')}
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mt-2 tracking-tight">
+            {t('मुझे कौन सा प्रमाण पत्र चाहिए?', 'Which Certificate Do I Need?')}
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            {t(
+              'अपनी वास्तविक आवश्यकता (कॉलेज, नौकरी, सेना, पेंशन) के अनुसार आवश्यक प्रमाण पत्रों की सही सूची जानें।',
+              'Select your actual goal to find the exact set of certificates and documents required.'
+            )}
+          </p>
         </div>
-      </header>
 
-      <main className="max-w-xl mx-auto px-4 pb-24 pt-4">
-        <p className="text-slate-500 text-sm mb-5">
-          {lang === 'hi'
-            ? 'अपनी ज़रूरत के अनुसार श्रेणी चुनें और जानें कि कौन से दस्तावेज़ चाहिए।'
-            : 'Tap a category to find out which certificates and documents you need.'}
-        </p>
+        <Link
+          href="/documents"
+          className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs py-2.5 px-4 rounded-xl border border-emerald-200 transition-colors shrink-0"
+        >
+          {t('दस्तावेज़ पूर्व-जांच सूची →', 'Document Checklist →')}
+        </Link>
+      </div>
 
-        <div className="space-y-3" role="list">
-          {guideItems.map(item => {
-            const isOpen = openId === item.id;
-            return (
-              <div key={item.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden" role="listitem">
-                <button
-                  onClick={() => toggle2(item.id)}
-                  aria-expanded={isOpen}
-                  aria-controls={`guide-panel-${item.id}`}
-                  aria-label={lang === 'hi' ? item.titleHi : item.titleEn}
-                  className="w-full flex items-center justify-between px-4 py-4 text-left focus:outline-none focus:ring-2 focus:ring-inset focus:ring-green-500"
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl" aria-hidden="true">{item.iconEn}</span>
-                    <span className="font-semibold text-slate-900 text-sm">
+      {/* Accordion List */}
+      <div className="space-y-4">
+        {guideItems.map(item => {
+          const isOpen = openId === item.id;
+          return (
+            <div
+              key={item.id}
+              className={`bg-white rounded-3xl border transition-all overflow-hidden ${
+                isOpen ? 'border-emerald-500 shadow-md ring-2 ring-emerald-500/10' : 'border-slate-200 shadow-xs'
+              }`}
+            >
+              <button
+                onClick={() => setOpenId(isOpen ? null : item.id)}
+                className="w-full p-5 sm:p-6 text-left flex items-center justify-between gap-4 focus:outline-none"
+              >
+                <div className="flex items-center gap-4">
+                  <span className="text-3xl p-2.5 bg-slate-50 rounded-2xl">{item.iconEn}</span>
+                  <div>
+                    <h2 className="font-extrabold text-base sm:text-lg text-slate-900 leading-snug">
                       {lang === 'hi' ? item.titleHi : item.titleEn}
-                    </span>
+                    </h2>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      {lang === 'hi' ? item.descHi : item.descEn}
+                    </p>
                   </div>
-                  <span className={`text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} aria-hidden="true">
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg hidden sm:inline">
+                    ⏱ {lang === 'hi' ? item.timeHi : item.timeEn}
+                  </span>
+                  <span className={`text-slate-400 font-bold transition-transform text-lg ${isOpen ? 'rotate-180' : ''}`}>
                     ▾
                   </span>
-                </button>
+                </div>
+              </button>
 
-                {isOpen && (
-                  <div id={`guide-panel-${item.id}`} className="border-t border-slate-100 px-4 pb-4 pt-3">
-                    {/* Certificates needed */}
-                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">
-                      {lang === 'hi' ? 'आवश्यक प्रमाण पत्र' : 'Certificates Needed'}
-                    </p>
-                    <div className="space-y-2 mb-4">
+              {isOpen && (
+                <div className="px-5 sm:px-6 pb-6 pt-2 border-t border-slate-100 bg-slate-50/50 space-y-5 animate-in fade-in">
+                  {/* Required Certificates */}
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-xs font-black uppercase tracking-wider text-slate-600">
+                        {t('आवश्यक प्रमाण पत्र (ऑनलाइन आवेदन करें):', 'Certificates Needed (Apply Online):')}
+                      </p>
+                      <button
+                        onClick={() => speak(`${lang === 'hi' ? item.titleHi : item.titleEn}. ${lang === 'hi' ? item.descHi : item.descEn}`)}
+                        className="text-emerald-700 text-xs font-bold flex items-center gap-1"
+                      >
+                        <span>🔊</span>
+                        <span>{t('विवरण सुनें', 'Listen')}</span>
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                       {item.certs.map(cert => (
-                        <div key={cert.applyId} className="flex items-center justify-between bg-green-50 rounded-xl px-3 py-2.5">
-                          <span className="text-sm font-medium text-green-800">
+                        <div
+                          key={cert.applyId}
+                          className="bg-white p-3.5 rounded-2xl border border-slate-200 flex items-center justify-between shadow-xs"
+                        >
+                          <span className="font-bold text-xs sm:text-sm text-slate-900">
                             {lang === 'hi' ? cert.hi : cert.en}
                           </span>
                           <Link
                             href={`/apply/${cert.applyId}`}
-                            aria-label={lang === 'hi' ? `${cert.hi} के लिए आवेदन करें` : `Apply for ${cert.en}`}
-                            className="text-xs bg-green-700 text-white px-3 py-1.5 rounded-lg font-semibold focus:outline-none focus:ring-2 focus:ring-green-500"
+                            className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-3.5 py-1.5 rounded-xl shadow-xs transition-all shrink-0"
                           >
-                            {lang === 'hi' ? '→ आवेदन' : '→ Apply Now'}
+                            {t('आवेदन करें →', 'Apply →')}
                           </Link>
                         </div>
                       ))}
                     </div>
+                  </div>
 
-                    {/* Documents */}
-                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">
-                      {lang === 'hi' ? 'साथ लाएं' : 'Bring These Documents'}
+                  {/* Required Supporting Documents */}
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-wider text-slate-600 mb-2">
+                      {t('आवेदन हेतु साथ रखने वाले दस्तावेज़:', 'Documents to Keep Ready (DigiLocker supported):')}
                     </p>
-                    <ul className="space-y-1 mb-4">
-                      {(lang === 'hi' ? item.docsHi : item.docsEn).map((doc, i) => (
-                        <li key={i} className="flex items-center gap-2 text-sm text-slate-700">
-                          <span className="text-green-600" aria-hidden="true">•</span>
-                          {doc}
-                        </li>
-                      ))}
-                    </ul>
-
-                    {/* Time */}
-                    <div className="flex items-center gap-2 text-sm text-slate-500">
-                      <span aria-hidden="true">⏱</span>
-                      <span>
-                        {lang === 'hi' ? 'अनुमानित समय: ' : 'Est. time: '}
-                        <span className="font-semibold text-slate-700">
-                          {lang === 'hi' ? item.timeHi : item.timeEn}
+                    <div className="flex flex-wrap gap-2">
+                      {(lang === 'hi' ? item.docsHi : item.docsEn).map((doc, idx) => (
+                        <span
+                          key={idx}
+                          className="bg-white text-slate-800 border border-slate-200 text-xs font-semibold px-3 py-1.5 rounded-xl flex items-center gap-1.5"
+                        >
+                          <span className="text-emerald-600">✓</span>
+                          <span>{doc}</span>
                         </span>
-                      </span>
+                      ))}
                     </div>
                   </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </main>
-
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-2px_12px_rgba(0,0,0,0.06)]" aria-label="Main navigation">
-        <div className="max-w-xl mx-auto flex justify-around py-2 px-2">
-          {navItems.map(n => (
-            <Link href={n.href} key={n.href} aria-label={lang === 'hi' ? n.labelHi : n.labelEn}>
-              <div className={`flex flex-col items-center px-2 py-1 rounded-xl ${n.href === '/' ? 'text-green-700' : 'text-slate-400'}`}>
-                <span className="text-xl" aria-hidden="true">{n.icon}</span>
-                <span className="text-[10px] mt-0.5 font-medium">{lang === 'hi' ? n.labelHi : n.labelEn}</span>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </nav>
-    </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </main>
   );
 }

@@ -1,162 +1,162 @@
-﻿'use client';
+'use client';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useLang } from '../lang-context';
-
-type Category = 'all' | 'certificate' | 'permit' | 'other';
-
-const services = [
-  { id: 'income',      emoji: '📄', hi: 'आय प्रमाण पत्र',            en: 'Income Certificate',       time: '7-10 days',  timeHi: '7-10 दिन',   cat: 'certificate' as Category },
-  { id: 'domicile',   emoji: '🏠', hi: 'निवास प्रमाण पत्र',          en: 'Domicile Certificate',     time: '10-15 days', timeHi: '10-15 दिन',  cat: 'certificate' as Category },
-  { id: 'caste',      emoji: '📋', hi: 'जाति प्रमाण पत्र',           en: 'Caste Certificate',        time: '7-14 days',  timeHi: '7-14 दिन',   cat: 'certificate' as Category },
-  { id: 'birth',      emoji: '👶', hi: 'जन्म प्रमाण पत्र',           en: 'Birth Certificate',        time: '5-7 days',   timeHi: '5-7 दिन',    cat: 'certificate' as Category },
-  { id: 'character',  emoji: '✅', hi: 'चरित्र प्रमाण पत्र',         en: 'Character Certificate',    time: '10 days',    timeHi: '10 दिन',     cat: 'certificate' as Category },
-  { id: 'marriage',   emoji: '💍', hi: 'विवाह प्रमाण पत्र',          en: 'Marriage Certificate',     time: '15-21 days', timeHi: '15-21 दिन',  cat: 'certificate' as Category },
-  { id: 'death',      emoji: '🕊', hi: 'मृत्यु प्रमाण पत्र',         en: 'Death Certificate',        time: '5-7 days',   timeHi: '5-7 दिन',    cat: 'certificate' as Category },
-  { id: 'disability', emoji: '♿', hi: 'विकलांगता प्रमाण पत्र',      en: 'Disability Certificate',   time: '15-30 days', timeHi: '15-30 दिन',  cat: 'certificate' as Category },
-  { id: 'hilly',      emoji: '⛰', hi: 'पहाड़ी क्षेत्र प्रमाण पत्र',   en: 'Hilly Area Certificate',   time: '7 days',     timeHi: '7 दिन',      cat: 'certificate' as Category },
-  { id: 'arms',       emoji: '🔐', hi: 'शस्त्र लाइसेंस',              en: 'Arms Licence',             time: '30-60 days', timeHi: '30-60 दिन',  cat: 'permit' as Category },
-  { id: 'trade',      emoji: '🏪', hi: 'व्यापार लाइसेंस',             en: 'Trade Licence',            time: '15-20 days', timeHi: '15-20 दिन',  cat: 'permit' as Category },
-  { id: 'ration',     emoji: '🌾', hi: 'राशन कार्ड',                  en: 'Ration Card',              time: '30 days',    timeHi: '30 दिन',     cat: 'other' as Category },
-];
-
-const filters: { id: Category; hi: string; en: string }[] = [
-  { id: 'all',         hi: 'सभी',        en: 'All' },
-  { id: 'certificate', hi: 'प्रमाण पत्र', en: 'Certificates' },
-  { id: 'permit',      hi: 'अनुमति',     en: 'Permits' },
-  { id: 'other',       hi: 'अन्य',       en: 'Other' },
-];
-
-const navItems = [
-  { icon: '🏠', labelHi: 'होम',    labelEn: 'Home',      href: '/' },
-  { icon: '📋', labelHi: 'सेवाएं', labelEn: 'Services',  href: '/services' },
-  { icon: '🔍', labelHi: 'स्थिति', labelEn: 'Track',     href: '/track' },
-  { icon: '📢', labelHi: 'शिकायत', labelEn: 'Grievance', href: '/grievance' },
-  { icon: '👤', labelHi: 'खाता',   labelEn: 'Account',   href: '/account' },
-];
+import { ALL_SERVICES } from '../data/services';
 
 export default function ServicesPage() {
-  const { lang, toggle } = useLang();
+  const { lang, t, speak } = useLang();
   const [query, setQuery] = useState('');
-  const [activeFilter, setActiveFilter] = useState<Category>('all');
+  const [activeCategory, setActiveCategory] = useState<string>('all');
 
-  const filtered = services.filter(s => {
-    const matchCat = activeFilter === 'all' || s.cat === activeFilter;
-    const q = query.toLowerCase();
-    const matchQ = !q || s.hi.includes(q) || s.en.toLowerCase().includes(q);
+  const categories = [
+    { id: 'all', labelHi: 'सभी सेवाएं', labelEn: 'All Services', icon: '🏛' },
+    { id: 'certificate', labelHi: 'प्रमाण पत्र', labelEn: 'Certificates', icon: '📄' },
+    { id: 'revenue', labelHi: 'राजस्व एवं अभिलेख', labelEn: 'Revenue & Land', icon: '🗺' },
+    { id: 'welfare', labelHi: 'कल्याण एवं पेंशन', labelEn: 'Welfare & Pension', icon: '🌾' },
+  ];
+
+  const filtered = ALL_SERVICES.filter(s => {
+    const matchCat = activeCategory === 'all' || s.category === activeCategory;
+    const q = query.toLowerCase().trim();
+    const matchQ =
+      !q ||
+      s.hi.toLowerCase().includes(q) ||
+      s.en.toLowerCase().includes(q) ||
+      s.descHi.toLowerCase().includes(q) ||
+      s.descEn.toLowerCase().includes(q) ||
+      s.departmentHi.toLowerCase().includes(q);
     return matchCat && matchQ;
   });
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/" aria-label={lang === 'hi' ? 'होम पर जाएं' : 'Go back home'}>
-              <span className="text-slate-500 text-xl leading-none">←</span>
-            </Link>
-            <h1 className="font-bold text-slate-900 text-base">
-              {lang === 'hi' ? 'सभी सेवाएं' : 'All Services'}
-            </h1>
-          </div>
-          <button
-            onClick={toggle}
-            aria-label={lang === 'hi' ? 'Switch to English' : 'हिंदी में बदलें'}
-            className="text-sm border border-green-700 text-green-700 rounded-full px-3 py-1 font-semibold focus:outline-none focus:ring-2 focus:ring-green-500"
-          >
-            {lang === 'hi' ? 'EN' : 'हि'}
-          </button>
-        </div>
-      </header>
-
-      <main className="max-w-xl mx-auto px-4 pb-24">
-        <div className="relative mt-4 mb-3">
-          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" aria-hidden="true">🔍</span>
-          <input
-            type="search"
-            value={query}
-            onChange={e => setQuery(e.target.value)}
-            placeholder={lang === 'hi' ? 'सेवा खोजें...' : 'Search services...'}
-            aria-label={lang === 'hi' ? 'सेवा खोजें' : 'Search services'}
-            className="w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent placeholder:text-slate-400"
-          />
+    <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 py-8 pb-32">
+      {/* Header */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <span className="text-[10px] font-black uppercase tracking-widest text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-md">
+            {t('नागरिक ई-सेवाएं निर्देशिका', 'Citizen e-Services Directory')}
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mt-2 tracking-tight">
+            {t('उत्तराखण्ड अपणी सरकार सेवाएं', 'Uttarakhand Apuni Sarkar e-Services')}
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            {t(
+              'सेवा का अधिकार अधिनियम (RTS Act) के तहत कानूनी गारंटीकृत समयसीमा, पूर्व-शर्तें एवं ऑनलाइन आवेदन',
+              'Guaranteed statutory delivery times, required documents, and instant online submission'
+            )}
+          </p>
         </div>
 
-        <div className="flex gap-2 overflow-x-auto pb-2 mb-4" role="group" aria-label={lang === 'hi' ? 'श्रेणी फ़िल्टर' : 'Category filter'}>
-          {filters.map(f => (
+        <Link
+          href="/timeline"
+          className="bg-blue-50 hover:bg-blue-100 text-blue-900 font-bold text-xs py-2.5 px-4 rounded-xl border border-blue-200 transition-colors flex items-center gap-1.5 shrink-0"
+        >
+          <span>⏱️</span>
+          <span>{t('RTS समयसीमा चार्ट (SLA)', 'RTS Delivery Charters')}</span>
+        </Link>
+      </div>
+
+      {/* Filter & Search Bar */}
+      <div className="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        {/* Category Pills */}
+        <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 no-scrollbar">
+          {categories.map(cat => (
             <button
-              key={f.id}
-              onClick={() => setActiveFilter(f.id)}
-              aria-label={lang === 'hi' ? f.hi : f.en}
-              aria-pressed={activeFilter === f.id}
-              className={`shrink-0 px-4 py-1.5 rounded-full text-sm font-semibold border transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 ${
-                activeFilter === f.id
-                  ? 'bg-green-700 text-white border-green-700'
-                  : 'bg-white text-slate-600 border-slate-200'
+              key={cat.id}
+              onClick={() => setActiveCategory(cat.id)}
+              className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all shrink-0 flex items-center gap-1.5 ${
+                activeCategory === cat.id
+                  ? 'bg-emerald-700 text-white shadow-xs'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
               }`}
             >
-              {lang === 'hi' ? f.hi : f.en}
+              <span>{cat.icon}</span>
+              <span>{lang === 'hi' ? cat.labelHi : cat.labelEn}</span>
             </button>
           ))}
         </div>
 
-        <p className="text-xs text-slate-400 mb-3">
-          {lang === 'hi'
-            ? `${filtered.length} सेवाएं मिलीं`
-            : `${filtered.length} service${filtered.length !== 1 ? 's' : ''} found`}
-        </p>
-
-        <ul className="space-y-3" role="list" aria-label={lang === 'hi' ? 'सेवाओं की सूची' : 'Services list'}>
-          {filtered.length === 0 ? (
-            <li className="text-center py-12 text-slate-400">
-              <div className="text-4xl mb-2">🔍</div>
-              <p>{lang === 'hi' ? 'कोई सेवा नहीं मिली' : 'No services found'}</p>
-            </li>
-          ) : (
-            filtered.map(s => (
-              <li key={s.id}>
-                <div className="bg-white rounded-2xl border border-slate-100 shadow-sm px-4 py-3.5 flex items-center gap-4">
-                  <span className="text-3xl shrink-0" role="img" aria-label={s.en}>{s.emoji}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-slate-900 text-sm">
-                      {lang === 'hi' ? s.hi : s.en}
-                    </p>
-                    <p className="text-xs text-slate-400 mt-0.5">
-                      {lang === 'hi' ? s.en : s.hi}
-                    </p>
-                    <div className="flex items-center gap-1 mt-1">
-                      <span className="text-xs" aria-hidden="true">⏱</span>
-                      <span className="text-xs text-slate-500">
-                        {lang === 'hi' ? s.timeHi : s.time}
-                      </span>
-                    </div>
-                  </div>
-                  <Link
-                    href={`/apply/${s.id}`}
-                    aria-label={lang === 'hi' ? `${s.hi} के लिए आवेदन करें` : `Apply for ${s.en}`}
-                    className="shrink-0 bg-green-700 text-white text-sm font-semibold px-4 py-2 rounded-xl hover:bg-green-800 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-green-500"
-                  >
-                    {lang === 'hi' ? '→ आवेदन' : '→ Apply'}
-                  </Link>
-                </div>
-              </li>
-            ))
-          )}
-        </ul>
-      </main>
-
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-2px_12px_rgba(0,0,0,0.06)]" aria-label="Main navigation">
-        <div className="max-w-xl mx-auto flex justify-around py-2 px-2">
-          {navItems.map(n => (
-            <Link href={n.href} key={n.href} aria-label={lang === 'hi' ? n.labelHi : n.labelEn}>
-              <div className={`flex flex-col items-center px-2 py-1 rounded-xl ${n.href === '/services' ? 'text-green-700' : 'text-slate-400'}`}>
-                <span className="text-xl" aria-hidden="true">{n.icon}</span>
-                <span className="text-[10px] mt-0.5 font-medium">{lang === 'hi' ? n.labelHi : n.labelEn}</span>
-              </div>
-            </Link>
-          ))}
+        {/* Search */}
+        <div className="w-full md:w-80 relative">
+          <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400">🔍</span>
+          <input
+            type="search"
+            value={query}
+            onChange={e => setQuery(e.target.value)}
+            placeholder={t('सेवा, विभाग या उद्देश्य खोजें...', 'Search service or department...')}
+            className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm outline-none focus:ring-2 focus:ring-emerald-500"
+          />
         </div>
-      </nav>
-    </div>
+      </div>
+
+      <div className="flex items-center justify-between mb-4">
+        <p className="text-xs font-bold text-slate-500">
+          {t(`${filtered.length} सेवाएं उपलब्ध`, `${filtered.length} services matching query`)}
+        </p>
+      </div>
+
+      {/* Services Grid (Responsive 1/2/3/4 cols) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {filtered.map(service => (
+          <div
+            key={service.id}
+            className="bg-white rounded-3xl p-5 border border-slate-200 shadow-xs hover:shadow-md hover:border-emerald-300 transition-all flex flex-col justify-between group"
+          >
+            <div>
+              <div className="flex items-start justify-between mb-3">
+                <span className="text-3xl p-2 bg-slate-50 rounded-2xl group-hover:scale-110 transition-transform inline-block">
+                  {service.emoji}
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => speak(`${lang === 'hi' ? service.hi : service.en}. ${lang === 'hi' ? service.descHi : service.descEn}`)}
+                    title={t('सुनें (Audio)', 'Listen')}
+                    aria-label={t('विवरण सुनें', 'Listen to details')}
+                    className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-emerald-100 text-slate-600 hover:text-emerald-800 flex items-center justify-center text-xs transition-colors"
+                  >
+                    🔊
+                  </button>
+                  <span className="text-[11px] font-bold bg-emerald-50 text-emerald-800 px-2.5 py-0.5 rounded-md border border-emerald-200">
+                    ⏱ {service.days} {t('दिन', 'Days')}
+                  </span>
+                </div>
+              </div>
+
+              <h3 className="font-extrabold text-slate-900 text-base leading-snug group-hover:text-emerald-800 transition-colors">
+                {lang === 'hi' ? service.hi : service.en}
+              </h3>
+              <p className="text-xs text-slate-400 mt-0.5 font-medium">
+                {lang === 'hi' ? service.en : service.hi}
+              </p>
+
+              <p className="text-xs text-slate-600 mt-2 line-clamp-2 leading-relaxed">
+                {lang === 'hi' ? service.descHi : service.descEn}
+              </p>
+
+              <div className="mt-3 pt-3 border-t border-slate-100 text-[11px] space-y-1">
+                <p className="text-slate-500">
+                  <span className="font-semibold text-slate-700">{t('विभाग: ', 'Dept: ')}</span>
+                  {lang === 'hi' ? service.departmentHi : service.departmentEn}
+                </p>
+                <p className="text-slate-500">
+                  <span className="font-semibold text-slate-700">{t('सरकारी शुल्क: ', 'Fee: ')}</span>
+                  <span className="font-bold text-emerald-800">{lang === 'hi' ? service.feeHi : service.fee}</span>
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-5 pt-3 border-t border-slate-100">
+              <Link
+                href={`/apply/${service.id}`}
+                className="w-full bg-emerald-700 hover:bg-emerald-800 active:scale-95 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition-all text-center block shadow-xs"
+              >
+                {t('ऑनलाइन आवेदन करें →', 'Apply Online →')}
+              </Link>
+            </div>
+          </div>
+        ))}
+      </div>
+    </main>
   );
 }

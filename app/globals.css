@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 @theme {
-  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --color-brand: #15803d;
   --color-brand-light: #f0fdf4;
 }
@@ -17,4 +17,34 @@ html {
 body {
   font-family: var(--font-sans);
   overscroll-behavior: none;
+}
+
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 1rem);
+}
+
+/* Custom scrollbar for chips */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Input field utility */
+.input-field {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 1rem;
+  padding: 0.85rem 1rem;
+  font-size: 0.95rem;
+  background: white;
+  outline: none;
+  transition: all 0.15s ease-in-out;
+}
+
+.input-field:focus {
+  border-color: #059669;
+  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
 }

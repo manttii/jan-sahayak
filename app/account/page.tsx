@@ -1,300 +1,356 @@
-﻿'use client';
+'use client';
 import { useState } from 'react';
 import Link from 'next/link';
 import { useLang } from '../lang-context';
+import { DEMO_APPLICATIONS } from '../data/services';
 
-type AuthView = 'home' | 'aadhaar' | 'mobile';
-
-const features = [
-  { iconEn: '📝', hi: 'ड्राफ्ट सेव करें',           en: 'Save application drafts' },
-  { iconEn: '📍', hi: 'सभी आवेदन ट्रैक करें',       en: 'Track all applications' },
-  { iconEn: '📥', hi: 'प्रमाण पत्र डाउनलोड करें',   en: 'Download certificates' },
-  { iconEn: '🔔', hi: 'SMS और नोटिफिकेशन पाएं',     en: 'Get SMS & notifications' },
-];
-
-const navItems = [
-  { icon: '🏠', labelHi: 'होम',    labelEn: 'Home',      href: '/' },
-  { icon: '📋', labelHi: 'सेवाएं', labelEn: 'Services',  href: '/services' },
-  { icon: '🔍', labelHi: 'स्थिति', labelEn: 'Track',     href: '/track' },
-  { icon: '📢', labelHi: 'शिकायत', labelEn: 'Grievance', href: '/grievance' },
-  { icon: '👤', labelHi: 'खाता',   labelEn: 'Account',   href: '/account' },
-];
+type AuthView = 'select' | 'aadhaar' | 'mobile' | 'dashboard';
 
 export default function AccountPage() {
-  const { lang, toggle } = useLang();
-  const [view, setView] = useState<AuthView>('home');
-  const [aadhaarInput, setAadhaarInput] = useState('');
-  const [mobileInput, setMobileInput] = useState('');
+  const { lang, t, showToast } = useLang();
+  const [view, setView] = useState<AuthView>('select');
+  const [aadhaarInput, setAadhaarInput] = useState('981245678901');
+  const [mobileInput, setMobileInput] = useState('9876543210');
   const [otpSent, setOtpSent] = useState(false);
   const [otpValue, setOtpValue] = useState('');
+  const [activeTab, setActiveTab] = useState<'apps' | 'digilocker' | 'grievances'>('apps');
 
-  const handleSendOtp = () => setOtpSent(true);
+  const handleSendOtp = () => {
+    setOtpSent(true);
+    setOtpValue('123456');
+    showToast(
+      t('OTP प्राप्त हुआ 📲', 'OTP Received 📲'),
+      t('सुरक्षा कोड: 123456 (डेमो हेतु स्वतः भरा गया)', 'Verification code: 123456 (Auto-filled for demo)'),
+      'info'
+    );
+  };
 
-  return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
-        <div className="max-w-xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {view !== 'home' ? (
-              <button
-                onClick={() => { setView('home'); setOtpSent(false); setOtpValue(''); }}
-                aria-label={lang === 'hi' ? 'वापस जाएं' : 'Go back'}
-                className="text-slate-500 text-xl leading-none focus:outline-none"
-              >
-                ←
-              </button>
-            ) : (
-              <Link href="/" aria-label={lang === 'hi' ? 'होम पर जाएं' : 'Go back home'}>
-                <span className="text-slate-500 text-xl leading-none">←</span>
-              </Link>
-            )}
-            <h1 className="font-bold text-slate-900 text-base">
-              {lang === 'hi' ? 'खाता / लॉगिन' : 'Account / Login'}
-            </h1>
-          </div>
-          <button
-            onClick={toggle}
-            aria-label={lang === 'hi' ? 'Switch to English' : 'हिंदी में बदलें'}
-            className="text-sm border border-green-700 text-green-700 rounded-full px-3 py-1 font-semibold focus:outline-none focus:ring-2 focus:ring-green-500"
-          >
-            {lang === 'hi' ? 'EN' : 'हि'}
-          </button>
-        </div>
-      </header>
+  const handleVerify = () => {
+    if (otpValue === '123456' || otpValue.length === 6) {
+      setView('dashboard');
+      showToast(
+        t('लॉगिन सफल ✅', 'Login Successful ✅'),
+        t('नमस्ते राम कुमार शर्मा, आपके नागरिक पोर्टल में स्वागत है।', 'Welcome back, Ram Kumar Sharma.'),
+        'success'
+      );
+    }
+  };
 
-      <main className="max-w-xl mx-auto px-4 pb-24 pt-6">
+  const handleLogout = () => {
+    setView('select');
+    setOtpSent(false);
+    setOtpValue('');
+  };
 
-        {/* ===== HOME VIEW ===== */}
-        {view === 'home' && (
-          <div>
-            {/* Brand badge */}
-            <div className="flex flex-col items-center mb-8">
-              <div className="w-16 h-16 bg-green-700 rounded-full flex items-center justify-center text-white font-bold text-2xl mb-3" aria-hidden="true">उ</div>
-              <h2 className="text-xl font-bold text-slate-900">{lang === 'hi' ? 'अपना खाता खोलें' : 'Access Your Account'}</h2>
-              <p className="text-slate-500 text-sm mt-1 text-center">
-                {lang === 'hi' ? 'सुरक्षित और आसान लॉगिन' : 'Safe and easy login'}
+  // DASHBOARD VIEW
+  if (view === 'dashboard') {
+    return (
+      <main className="w-full max-w-6xl mx-auto px-4 py-8 pb-32">
+        {/* Profile Card Header */}
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-emerald-700 text-white flex items-center justify-center font-black text-2xl shadow-md shrink-0">
+              र
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl sm:text-2xl font-black text-slate-900">
+                  राम कुमार शर्मा (Ram Kumar Sharma)
+                </h1>
+                <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-md">
+                  Aadhaar eKYC ✓
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                +91 98765 43210 &bull; Raipur Road, Dehradun, Uttarakhand
               </p>
             </div>
+          </div>
 
-            {/* Aadhaar OTP button */}
-            <button
-              onClick={() => setView('aadhaar')}
-              aria-label={lang === 'hi' ? 'आधार OTP से लॉगिन करें' : 'Login with Aadhaar OTP'}
-              className="w-full flex items-center gap-4 bg-green-700 text-white rounded-2xl px-5 py-5 mb-3 shadow-lg shadow-green-200 hover:bg-green-800 active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <span className="text-3xl" aria-hidden="true">🪪</span>
-              <div className="text-left">
-                <p className="font-bold text-base">{lang === 'hi' ? 'आधार OTP से लॉगिन' : 'Login with Aadhaar OTP'}</p>
-                <p className="text-green-200 text-xs mt-0.5">{lang === 'hi' ? 'सबसे सुरक्षित तरीका' : 'Most secure method'}</p>
-              </div>
-              <span className="ml-auto text-xl" aria-hidden="true">→</span>
-            </button>
-
-            {/* Mobile OTP button */}
-            <button
-              onClick={() => setView('mobile')}
-              aria-label={lang === 'hi' ? 'मोबाइल OTP से लॉगिन करें' : 'Login with Mobile OTP'}
-              className="w-full flex items-center gap-4 bg-white border-2 border-slate-200 text-slate-800 rounded-2xl px-5 py-4 mb-5 hover:border-green-400 active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-green-500"
-            >
-              <span className="text-3xl" aria-hidden="true">📱</span>
-              <div className="text-left">
-                <p className="font-semibold text-base">{lang === 'hi' ? 'मोबाइल OTP से लॉगिन' : 'Login with Mobile OTP'}</p>
-                <p className="text-slate-400 text-xs mt-0.5">{lang === 'hi' ? 'अपने फ़ोन नंबर से' : 'Using your phone number'}</p>
-              </div>
-              <span className="ml-auto text-xl text-slate-400" aria-hidden="true">→</span>
-            </button>
-
-            {/* Divider */}
-            <div className="flex items-center gap-3 mb-5">
-              <div className="flex-1 h-px bg-slate-200" />
-              <span className="text-sm text-slate-400">{lang === 'hi' ? 'या' : 'or'}</span>
-              <div className="flex-1 h-px bg-slate-200" />
-            </div>
-
-            {/* Guest */}
+          <div className="flex items-center gap-2">
             <Link
-              href="/"
-              aria-label={lang === 'hi' ? 'अतिथि के रूप में जारी रखें' : 'Continue as guest'}
-              className="block w-full text-center text-green-700 font-semibold py-3 focus:outline-none focus:underline"
+              href="/services"
+              className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-xs transition-all"
             >
-              {lang === 'hi' ? 'अतिथि के रूप में जारी रखें →' : 'Continue as Guest →'}
+              + {t('नई सेवा आवेदन करें', 'Apply New Service')}
             </Link>
+            <button
+              onClick={handleLogout}
+              className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs py-2.5 px-3.5 rounded-xl transition-colors"
+            >
+              {t('लॉगआउट', 'Logout')}
+            </button>
+          </div>
+        </div>
 
-            {/* Feature preview */}
-            <div className="mt-8 bg-slate-100 rounded-2xl p-4">
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-3">
-                {lang === 'hi' ? 'लॉगिन के बाद आप कर सकते हैं:' : 'After logging in you can:'}
-              </p>
-              <ul className="space-y-2.5">
-                {features.map(f => (
-                  <li key={f.en} className="flex items-center gap-3">
-                    <span className="text-xl" aria-hidden="true">{f.iconEn}</span>
-                    <span className="text-sm text-slate-700 font-medium">{lang === 'hi' ? f.hi : f.en}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+        {/* Dashboard Tabs Bar */}
+        <div className="flex border-b border-slate-200 mb-6 gap-2">
+          {[
+            { id: 'apps', labelHi: 'मेरे आवेदन (3)', labelEn: 'My Applications (3)' },
+            { id: 'digilocker', labelHi: 'डिजीलॉकर वॉल्ट (4)', labelEn: 'DigiLocker Vault (4)' },
+            { id: 'grievances', labelHi: 'मेरी शिकायतें (1)', labelEn: 'My Grievances (1)' },
+          ].map(tab => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id as any)}
+              className={`pb-3 px-4 text-xs sm:text-sm font-bold border-b-2 transition-all ${
+                activeTab === tab.id
+                  ? 'border-emerald-700 text-emerald-800 font-black'
+                  : 'border-transparent text-slate-500 hover:text-slate-800'
+              }`}
+            >
+              {lang === 'hi' ? tab.labelHi : tab.labelEn}
+            </button>
+          ))}
+        </div>
+
+        {/* Tab 1: Applications */}
+        {activeTab === 'apps' && (
+          <div className="space-y-4">
+            {DEMO_APPLICATIONS.map(app => (
+              <div
+                key={app.id}
+                className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs hover:border-emerald-300 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono font-bold text-xs text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
+                      {app.id}
+                    </span>
+                    <span
+                      className={`text-[10px] font-bold px-2 py-0.5 rounded ${
+                        app.status === 'approved'
+                          ? 'bg-emerald-100 text-emerald-800'
+                          : 'bg-amber-100 text-amber-800'
+                      }`}
+                    >
+                      {lang === 'hi' ? app.statusLabelHi : app.statusLabelEn}
+                    </span>
+                  </div>
+                  <h3 className="font-extrabold text-slate-900 text-base mt-2">
+                    {lang === 'hi' ? app.serviceNameHi : app.serviceNameEn}
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    {t('जमा दिनांक:', 'Filed on:')} {app.appliedDate} &bull; {t('अपेक्षित RTS समयसीमा:', 'Expected by:')}{' '}
+                    {app.estimatedDate}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/track?id=${app.id}`}
+                    className="bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs py-2 px-4 rounded-xl transition-colors"
+                  >
+                    {t('स्थिति देखें', 'Track Live')}
+                  </Link>
+
+                  {app.status === 'approved' && (
+                    <Link
+                      href={`/track?id=${app.id}`}
+                      className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs py-2 px-4 rounded-xl transition-colors"
+                    >
+                      {t('प्रमाण पत्र डाउनलोड 📥', 'Download Cert 📥')}
+                    </Link>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
-        {/* ===== AADHAAR VIEW ===== */}
-        {view === 'aadhaar' && (
-          <div>
-            <div className="text-center mb-6">
-              <div className="text-5xl mb-2" aria-hidden="true">🪪</div>
-              <h2 className="text-lg font-bold text-slate-900">
-                {lang === 'hi' ? 'आधार से लॉगिन' : 'Login with Aadhaar'}
-              </h2>
-              <p className="text-slate-500 text-sm mt-1">
-                {lang === 'hi' ? 'आपका 12 अंकों का आधार नंबर दर्ज करें' : 'Enter your 12-digit Aadhaar number'}
-              </p>
-            </div>
-
-            <label className="block text-sm font-semibold text-slate-700 mb-2" htmlFor="aadhaar">
-              {lang === 'hi' ? 'आधार नंबर' : 'Aadhaar Number'}
-            </label>
-            <input
-              id="aadhaar"
-              type="tel"
-              inputMode="numeric"
-              maxLength={12}
-              value={aadhaarInput}
-              onChange={e => setAadhaarInput(e.target.value.replace(/\D/g, '').slice(0, 12))}
-              placeholder="XXXX XXXX XXXX"
-              aria-label={lang === 'hi' ? 'आधार नंबर दर्ज करें' : 'Enter Aadhaar number'}
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-green-500 mb-3"
-            />
-
-            {!otpSent ? (
-              <button
-                onClick={handleSendOtp}
-                disabled={aadhaarInput.length !== 12}
-                aria-label={lang === 'hi' ? 'OTP भेजें' : 'Send OTP'}
-                className="w-full bg-green-700 text-white font-semibold py-4 rounded-2xl disabled:opacity-40 disabled:cursor-not-allowed hover:bg-green-800 active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-green-500"
-              >
-                {lang === 'hi' ? 'OTP भेजें' : 'Send OTP'}
-              </button>
-            ) : (
-              <>
-                <div className="bg-green-50 border border-green-200 rounded-xl px-3 py-2 text-sm text-green-700 mb-3">
-                  {lang === 'hi' ? 'OTP आधार से जुड़े मोबाइल पर भेजा गया है।' : 'OTP sent to your Aadhaar-linked mobile number.'}
+        {/* Tab 2: DigiLocker Vault */}
+        {activeTab === 'digilocker' && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {[
+              { nameHi: 'आधार कार्ड (UIDAI)', nameEn: 'Aadhaar Card (UIDAI)', id: 'XXXX-XXXX-9182', date: 'Verified 14 Sep' },
+              { nameHi: 'राशन कार्ड (NFSA)', nameEn: 'Ration Card (NFSA)', id: 'UK-RAT-482910', date: 'Verified 10 Oct' },
+              { nameHi: 'कक्षा 10वीं मार्कशीट (UK Board)', nameEn: 'Class 10th Marksheet (UK Board)', id: 'Roll: 2618902', date: 'Verified 18 Oct' },
+              { nameHi: 'ड्राइविंग लाइसेंस (RTO Dehradun)', nameEn: 'Driving License (RTO UK-07)', id: 'UK-07-2018-0912', date: 'Verified 20 Oct' },
+            ].map((doc, i) => (
+              <div key={i} className="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs flex items-start gap-4">
+                <span className="text-3xl p-2 bg-blue-50 rounded-xl">🪪</span>
+                <div className="flex-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-50 px-2 py-0.5 rounded">
+                    DigiLocker Linked ✓
+                  </span>
+                  <h4 className="font-extrabold text-slate-900 text-sm mt-1">
+                    {lang === 'hi' ? doc.nameHi : doc.nameEn}
+                  </h4>
+                  <p className="text-xs font-mono text-slate-500 mt-0.5">{doc.id}</p>
+                  <p className="text-[11px] text-slate-400 mt-1">{doc.date}</p>
                 </div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2" htmlFor="otp-aadhaar">
-                  {lang === 'hi' ? 'OTP दर्ज करें' : 'Enter OTP'}
-                </label>
-                <input
-                  id="otp-aadhaar"
-                  type="tel"
-                  inputMode="numeric"
-                  maxLength={6}
-                  value={otpValue}
-                  onChange={e => setOtpValue(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  placeholder="- - - - - -"
-                  aria-label={lang === 'hi' ? 'OTP दर्ज करें' : 'Enter OTP'}
-                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-lg tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-green-500 mb-3"
-                />
-                <button
-                  disabled={otpValue.length !== 6}
-                  aria-label={lang === 'hi' ? 'सत्यापित करें' : 'Verify'}
-                  className="w-full bg-green-700 text-white font-semibold py-4 rounded-2xl disabled:opacity-40 disabled:cursor-not-allowed hover:bg-green-800 active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  {lang === 'hi' ? 'सत्यापित करें ✓' : 'Verify ✓'}
-                </button>
-              </>
-            )}
-            <p className="text-center text-xs text-slate-400 mt-4">
-              {lang === 'hi' ? '🔒 यह एक demo है — कोई वास्तविक डेटा नहीं भेजा जाएगा।' : '🔒 This is a demo — no real data is transmitted.'}
-            </p>
+              </div>
+            ))}
           </div>
         )}
 
-        {/* ===== MOBILE VIEW ===== */}
-        {view === 'mobile' && (
-          <div>
-            <div className="text-center mb-6">
-              <div className="text-5xl mb-2" aria-hidden="true">📱</div>
-              <h2 className="text-lg font-bold text-slate-900">
-                {lang === 'hi' ? 'मोबाइल OTP से लॉगिन' : 'Login with Mobile OTP'}
-              </h2>
-              <p className="text-slate-500 text-sm mt-1">
-                {lang === 'hi' ? 'अपना 10 अंकों का मोबाइल नंबर दर्ज करें' : 'Enter your 10-digit mobile number'}
-              </p>
-            </div>
+        {/* Tab 3: Grievances */}
+        {activeTab === 'grievances' && (
+          <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-xs space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <span className="text-xs font-mono font-bold text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded">
+                  GRV-2026-4819
+                </span>
+                <h4 className="font-extrabold text-slate-900 text-base mt-2">
+                  {t('आय प्रमाण पत्र में पटवारी स्थलीय सत्यापन में देरी', 'Delay in Income Certificate Field Verification')}
+                </h4>
+                <p className="text-xs text-slate-500 mt-1">
+                  {t('राजस्व विभाग, देहरादून सदर', 'Revenue Department, Dehradun Sadar')} &bull; 21 Oct 2026
+                </p>
+              </div>
 
-            <label className="block text-sm font-semibold text-slate-700 mb-2" htmlFor="mobile">
-              {lang === 'hi' ? 'मोबाइल नंबर' : 'Mobile Number'}
-            </label>
-            <div className="flex gap-2 mb-3">
-              <span className="flex items-center bg-slate-100 rounded-2xl px-3 text-slate-600 font-semibold border border-slate-200">+91</span>
-              <input
-                id="mobile"
-                type="tel"
-                inputMode="numeric"
-                maxLength={10}
-                value={mobileInput}
-                onChange={e => setMobileInput(e.target.value.replace(/\D/g, '').slice(0, 10))}
-                placeholder="98XXXXXXXX"
-                aria-label={lang === 'hi' ? 'मोबाइल नंबर दर्ज करें' : 'Enter mobile number'}
-                className="flex-1 rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-green-500"
-              />
+              <span className="bg-amber-100 text-amber-900 text-xs font-bold px-3 py-1 rounded-full">
+                {t('जांच प्रगति पर (3 दिन शेष)', 'Investigation in progress (3 days left)')}
+              </span>
             </div>
-
-            {!otpSent ? (
-              <button
-                onClick={handleSendOtp}
-                disabled={mobileInput.length !== 10}
-                aria-label={lang === 'hi' ? 'OTP भेजें' : 'Send OTP'}
-                className="w-full bg-green-700 text-white font-semibold py-4 rounded-2xl disabled:opacity-40 disabled:cursor-not-allowed hover:bg-green-800 active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-green-500"
-              >
-                {lang === 'hi' ? 'OTP भेजें' : 'Send OTP'}
-              </button>
-            ) : (
-              <>
-                <div className="bg-green-50 border border-green-200 rounded-xl px-3 py-2 text-sm text-green-700 mb-3">
-                  {lang === 'hi' ? `OTP +91-${mobileInput} पर भेजा गया।` : `OTP sent to +91-${mobileInput}.`}
-                </div>
-                <label className="block text-sm font-semibold text-slate-700 mb-2" htmlFor="otp-mobile">
-                  {lang === 'hi' ? 'OTP दर्ज करें' : 'Enter OTP'}
-                </label>
-                <input
-                  id="otp-mobile"
-                  type="tel"
-                  inputMode="numeric"
-                  maxLength={6}
-                  value={otpValue}
-                  onChange={e => setOtpValue(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                  placeholder="- - - - - -"
-                  aria-label={lang === 'hi' ? 'OTP दर्ज करें' : 'Enter OTP'}
-                  className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-lg tracking-widest text-center focus:outline-none focus:ring-2 focus:ring-green-500 mb-3"
-                />
-                <button
-                  disabled={otpValue.length !== 6}
-                  aria-label={lang === 'hi' ? 'सत्यापित करें' : 'Verify'}
-                  className="w-full bg-green-700 text-white font-semibold py-4 rounded-2xl disabled:opacity-40 disabled:cursor-not-allowed hover:bg-green-800 active:scale-[0.98] transition-all focus:outline-none focus:ring-2 focus:ring-green-500"
-                >
-                  {lang === 'hi' ? 'सत्यापित करें ✓' : 'Verify ✓'}
-                </button>
-              </>
-            )}
-            <p className="text-center text-xs text-slate-400 mt-4">
-              {lang === 'hi' ? '🔒 यह एक demo है — कोई वास्तविक डेटा नहीं भेजा जाएगा।' : '🔒 This is a demo — no real data is transmitted.'}
+            <p className="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-200">
+              {t(
+                'तहसीलदार कार्यालय द्वारा संबंधित क्षेत्रीय लेखपाल को 24 घंटे के भीतर स्थलीय आख्या प्रस्तुत करने हेतु अनुस्मारक (Notice) प्रेषित कर दिया गया है।',
+                'Reminder issued by Tehsildar office to Area Lekhpal to submit field report within 24 hours.'
+              )}
             </p>
           </div>
         )}
       </main>
+    );
+  }
 
-      <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-[0_-2px_12px_rgba(0,0,0,0.06)]" aria-label="Main navigation">
-        <div className="max-w-xl mx-auto flex justify-around py-2 px-2">
-          {navItems.map(n => (
-            <Link href={n.href} key={n.href} aria-label={lang === 'hi' ? n.labelHi : n.labelEn}>
-              <div className={`flex flex-col items-center px-2 py-1 rounded-xl ${n.href === '/account' ? 'text-green-700' : 'text-slate-400'}`}>
-                <span className="text-xl" aria-hidden="true">{n.icon}</span>
-                <span className="text-[10px] mt-0.5 font-medium">{lang === 'hi' ? n.labelHi : n.labelEn}</span>
-              </div>
-            </Link>
-          ))}
+  // LOGIN SCREEN
+  return (
+    <main className="w-full max-w-xl mx-auto px-4 py-12 pb-32">
+      <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-md text-center">
+        {/* Emblem */}
+        <div className="w-16 h-16 bg-linear-to-br from-emerald-700 to-green-900 rounded-2xl flex items-center justify-center text-white font-black text-2xl mx-auto mb-4 shadow-sm">
+          उ
         </div>
-      </nav>
-    </div>
+
+        <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+          {t('नागरिक खाता / लॉगिन', 'Citizen Portal Login')}
+        </h1>
+        <p className="text-xs sm:text-sm text-slate-500 mt-1">
+          {t(
+            'आधार अथवा मोबाइल ओटीपी से सुरक्षित और पेपरलेस लॉगिन करें',
+            'Secure paperless login with Aadhaar OTP or Mobile Number'
+          )}
+        </p>
+
+        {view === 'select' && (
+          <div className="mt-8 space-y-3">
+            <button
+              onClick={() => {
+                setView('aadhaar');
+                setOtpSent(false);
+              }}
+              className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold p-4 rounded-2xl shadow-xs transition-all flex items-center justify-between active:scale-95"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">🪪</span>
+                <div className="text-left">
+                  <p className="text-sm font-bold leading-tight">{t('आधार OTP से लॉगिन करें', 'Login with Aadhaar OTP')}</p>
+                  <p className="text-[11px] text-emerald-200">{t('डिजिटल इंडिया eKYC आधारित', 'Instant Aadhaar eKYC')}</p>
+                </div>
+              </div>
+              <span className="text-lg">→</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setView('mobile');
+                setOtpSent(false);
+              }}
+              className="w-full bg-white hover:bg-slate-50 border-2 border-slate-200 text-slate-800 font-bold p-4 rounded-2xl transition-all flex items-center justify-between active:scale-95"
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">📱</span>
+                <div className="text-left">
+                  <p className="text-sm font-bold leading-tight">{t('मोबाइल नंबर OTP से लॉगिन', 'Login with Mobile OTP')}</p>
+                  <p className="text-[11px] text-slate-400">{t('पंजीकृत फोन नंबर द्वारा', 'Using registered mobile number')}</p>
+                </div>
+              </div>
+              <span className="text-lg text-slate-400">→</span>
+            </button>
+
+            <div className="pt-4 border-t border-slate-100">
+              <Link
+                href="/services"
+                className="text-xs font-bold text-emerald-700 hover:underline"
+              >
+                {t('अतिथि के रूप में सीधे सेवाएं देखें →', 'Continue as guest to view services →')}
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* Aadhaar or Mobile OTP input */}
+        {(view === 'aadhaar' || view === 'mobile') && (
+          <div className="mt-6 text-left space-y-4">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-500">
+                {view === 'aadhaar' ? t('आधार नंबर (12 अंक)', 'Aadhaar Number (12 digits)') : t('मोबाइल नंबर (10 अंक)', 'Mobile Number')}
+              </span>
+              <button
+                onClick={() => setView('select')}
+                className="text-xs text-slate-400 hover:text-slate-700 font-semibold"
+              >
+                ← {t('बदलें', 'Change')}
+              </button>
+            </div>
+
+            {view === 'aadhaar' ? (
+              <input
+                type="text"
+                value={aadhaarInput}
+                onChange={e => setAadhaarInput(e.target.value)}
+                className="input-field font-mono font-bold text-base tracking-widest text-center"
+              />
+            ) : (
+              <input
+                type="tel"
+                value={mobileInput}
+                onChange={e => setMobileInput(e.target.value)}
+                className="input-field font-mono font-bold text-base tracking-widest text-center"
+              />
+            )}
+
+            {!otpSent ? (
+              <button
+                onClick={handleSendOtp}
+                className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3.5 rounded-2xl shadow-xs transition-all"
+              >
+                {t('OTP भेजें', 'Send Verification Code (OTP)')}
+              </button>
+            ) : (
+              <div className="space-y-4 pt-2">
+                <div className="bg-emerald-50 border border-emerald-200 p-3 rounded-2xl text-xs text-emerald-800 text-center">
+                  {t('OTP भेजा गया: 123456 (डेमो)', 'Demo OTP: 123456 sent.')}
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-slate-700 block mb-1">
+                    {t('6 अंकों का OTP दर्ज करें', 'Enter 6-digit OTP')}
+                  </label>
+                  <input
+                    type="text"
+                    maxLength={6}
+                    value={otpValue}
+                    onChange={e => setOtpValue(e.target.value)}
+                    placeholder="123456"
+                    className="input-field font-mono text-center text-xl font-bold tracking-widest"
+                  />
+                </div>
+
+                <button
+                  onClick={handleVerify}
+                  className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3.5 rounded-2xl shadow-xs transition-all"
+                >
+                  {t('सत्यापित करें व लॉगिन करें ✓', 'Verify & Enter Portal ✓')}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </main>
   );
 }
